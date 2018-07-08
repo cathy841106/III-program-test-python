@@ -117,12 +117,13 @@ for seg in segList:
 
 #計算TF值並取出前20大
 counter = Counter(segListWithoutStop).most_common(20)  #用Counter方法計算出各詞出現次數，並取出次數前20多的詞
-
+print (counter)
 #打包成Json格式
+sumc = 0
 for i in range(len(counter)):  
     for j in range(1,len(counter[i])):
-       sum += counter[i][j]  #加總次數
-average = sum / len(counter) #計算次數平均
+       sumc += counter[i][j] #加總次數
+average = sumc / len(counter) #計算次數平均
 counterJson = json.dumps([{'keyword': k, 'size': (v/average)*40} for k,v in counter], indent=2,ensure_ascii=False)  #counter轉換成json特定格式
 counterJson = "{" + counterJson + "}"
 print (counterJson)

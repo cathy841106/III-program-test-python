@@ -1,33 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
-	<title>D3 cloud</title>
-  <script src="./d3.js"></script>
-	<script src="./d3.layout.cloud.js"></script>
-  <script src="./d3.min.js"></script>
-  <script type="text/javascript" src="./jquery_3.3.1.js"></script>
-  <script src="./data.json"></script>  <!引入json檔>
+  <meta charset="UTF-8">
+  <title>D3 cloud</title>
+  <script src="jquery_3.3.1.js"></script>
+  <script src="d3.js"></script>
+  <script src="d3.layout.cloud.js"></script>
+  <script src="data.json"></script>  <!引入json檔>
 </head>
 <body>
-	<div id="vis"></div>   <!放置文字雲區域>
+  <div id="vis"></div>   <!放置文字雲區域>
     <script type="text/javascript">
       var fill = d3.scale.category20(); 
       var words;
-      $.getJSON("data.json", function(json) {
-        words = json;
-        console.log(json); // show the JSON file content into console
-      });
-      //var words=JSON.parse(data);  
+      $.ajax({
+        url: "data.json",
+        dataType: 'json',
+        //data: data,
+        //async: false,
+        success: function (data) { 
+            setWords(data);
+            console.log(words);
       var layout = d3.layout.cloud()
              .size([500, 500])
              .words(words)
-             .padding(2)
+             .padding(1)
              .rotate(0)
              .font('"微軟正黑體",Impact')
              .fontSize(function(d) { return d.size; })
              .on("end", draw);
       layout.start();
+    
       function draw(words) {
          d3.select("#vis").append("svg")
          .attr("width", layout.size()[0])
@@ -44,7 +47,15 @@
          .attr("transform", function(d) {
              return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
                })
-         .text(function(d) { return d.text; });
+         .text(function(d) { return d.keyword; });
+      }
+        }
+      }); 
+        
+      function setWords(d)
+      {
+          words = d;
+          console.log(words);
       }
 
     </script>

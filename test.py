@@ -5,8 +5,12 @@ import json
 import requests
 import jieba
 from collections import Counter
-from ConfigParser import RawConfigParser
+import configparser 
 import news 
+
+#讀取設定檔
+cfp = configparser.ConfigParser()
+cfp.readfp(open('config.ini'))
 
 #get request
 def requestGet(url,params):
@@ -63,14 +67,8 @@ def getNews(date,keyword):
 			for i in range(len(jsonData['data'])):
 				newsToAdd = news.News(jsonData['data'][i]['content']) #建立一個News物件，將文章內容存進物件裡
 				newsList.append(newsToAdd)	#文章物件加進news list裡
-				print (newsList[i].getNews())	
 		else:
 			print ('Get news unsuccessfully')
-
-#讀取設定檔
-cfp = RawConfigParser()
->>> with open('config.ini', 'rb') as fp:
-...     cfg.readfp(fp, 'config.ini')
 
 #取得token
 url = cfp.get('url','get_token_url')
@@ -82,10 +80,7 @@ success = requestGet(url,loginKey)[1]
 if success:
 	print ('Get token Successfully.')
 	tokenData = result.json()
-	print ('Token type:' + tokenData['token_type'] + '\nToken:' + tokenData['access_token'])
 	tokenForTest = tokenData['token_type'] + ' ' + tokenData['access_token']  #連接token type和token字串，並存進新變數，之後驗證、取資料會用到
-	print (tokenForTest)
-
 
 #驗證token有效性
 url = cfp.get('url','test_token_url')
@@ -95,11 +90,10 @@ success = requestPost(url,headers,data=None)[1]
 
 if success:
 	jsonData = result.json()
-	print (json.dumps(jsonData,indent=2))
 	if jsonData['_status'] == 'Success':
-		print ('Token is accessible')
+		print ('Token is accessible.')
 	else:
-		print ('Token not accessible')
+		print ('Token not accessible.')
 
 #取得文章內容
 getNews('2018-04-20','麻疹')
@@ -123,7 +117,6 @@ for seg in segList:
 
 #計算TF值並取出前20大
 counter = Counter(segListWithoutStop).most_common(20)  #用Counter方法計算出各詞出現次數，並取出次數前20多的詞
-print (counter)
 #打包成Json格式
 sumc = 0
 for i in range(len(counter)):  
@@ -132,7 +125,6 @@ for i in range(len(counter)):
 average = sumc / len(counter) #計算次數平均
 counterJson = json.dumps([{'keyword': k, 'size': (v/average)*40} for k,v in counter], indent=2,ensure_ascii=False)  #counter轉換成json特定格式
 counterJson = "{" + counterJson + "}"
-print (counterJson)
 
 #匯出
 with open('./website/data.json', 'w', encoding = "utf-8") as outfile:

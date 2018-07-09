@@ -5,6 +5,7 @@ import json
 import requests
 import jieba
 from collections import Counter
+from ConfigParser import RawConfigParser
 import news 
 
 #get request
@@ -47,7 +48,7 @@ def requestPost(url,headers,data):
 
 #取得新聞資料
 def getNews(date,keyword):
-	url = 'https://api2.ifeel.com.tw/pro/document/news/all'
+	url = cfp.get('url','get_all_news_url')
 	headers = {'Authorization': tokenForTest,'Content-Type': 'application/json'}
 	data = {'date': date,'keyword': keyword}
 	result = requestPost(url,headers,data=data)[0]
@@ -66,9 +67,14 @@ def getNews(date,keyword):
 		else:
 			print ('Get news unsuccessfully')
 
+#讀取設定檔
+cfp = RawConfigParser()
+>>> with open('config.ini', 'rb') as fp:
+...     cfg.readfp(fp, 'config.ini')
+
 #取得token
-url = 'https://api2.ifeel.com.tw/pro/auth'
-loginKey = {'member_account':'iiidsi_sa','client_secretkey':'daa75a16f538c13be9e97cf91acdd9c8'} 
+url = cfp.get('url','get_token_url')
+loginKey = {'member_account':cfp.get('account','member_account'),'client_secretkey':cfp.get('account','client_secretkey')} 
 
 result = requestGet(url,loginKey)[0]
 success = requestGet(url,loginKey)[1]
@@ -82,7 +88,7 @@ if success:
 
 
 #驗證token有效性
-url = 'https://api2.ifeel.com.tw/pro/auth'
+url = cfp.get('url','test_token_url')
 headers = {'Authorization': tokenForTest}
 result = requestPost(url,headers,data=None)[0]
 success = requestPost(url,headers,data=None)[1]

@@ -50,11 +50,11 @@ def requestPost(url,headers,data):
 	result.append(success)
 	return result
 
-#取得新聞資料
-def getNews(date,keyword):
-	url = cfp.get('url','get_all_news_url')
+#取得新聞詳細資料
+def getNews(date_from,date_to,keyword):
+	url = cfp.get('url','get_news_detail_url')
 	headers = {'Authorization': tokenForTest,'Content-Type': 'application/json'}
-	data = {'date': date,'keyword': keyword}
+	data = {'date_from': date_from, 'date_to': date_to ,'keyword': keyword}
 	result = requestPost(url,headers,data=data)[0]
 	success = requestPost(url,headers,data=data)[1]
 
@@ -62,11 +62,12 @@ def getNews(date,keyword):
 		#print (result.text)
 		jsonData = result.json() #result轉換成Json格式
 		if jsonData['_status'] == 'Success':
-			global newsList
-			newsList = []   #宣告存放個別文章的list
-			for i in range(len(jsonData['data'])):
-				newsToAdd = news.News(jsonData['data'][i]['content']) #建立一個News物件，將文章內容存進物件裡
-				newsList.append(newsToAdd)	#文章物件加進news list裡
+			print (jsonData)
+			#global newsList
+			#newsList = []   #宣告存放個別文章的list
+			#for i in range(len(jsonData['data'])):
+			#	newsToAdd = news.News(jsonData['data'][i]['content']) #建立一個News物件，將文章內容存進物件裡
+			#	newsList.append(newsToAdd)	#文章物件加進news list裡
 		else:
 			print ('Get news unsuccessfully')
 
@@ -95,9 +96,13 @@ if success:
 	else:
 		print ('Token not accessible.')
 
-#取得文章內容
-getNews('2018-04-20','麻疹')
-getNews('2018-04-21','麻疹')
+if __name__ == "__main__":
+    date_from = str(sys.argv[1])
+    date_to = str(sys.argv[2])
+    keyword = str(sys.argv[3])
+
+print (date_from + date_to + keyword)
+getNews('2018-04-20','2018-04-21','麻疹')
 
 #文章合併
 newsAppend = ''
